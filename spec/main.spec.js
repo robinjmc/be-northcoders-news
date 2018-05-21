@@ -52,10 +52,17 @@ describe('API', function () {
                 .get(`/api/articles/${topicDocs[0]._id}/comments`)
                 .expect(200)
                 .then(res => expect(res.body.length).to.equal(2)
-                    //expect(res.body.topics.length).to.equal(2)
                 )
             })
         })
+    describe('/users', () => {
+        it('GET /users/:username', () => {
+            return request
+            .get('/api/users/butter_bridge')
+            .expect(200)
+            .then(res => expect(res.body.username).to.equal('butter_bridge'))
+        })
+    })
     after(() => {
         mongoose.disconnect();
     })

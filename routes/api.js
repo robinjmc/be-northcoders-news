@@ -9,6 +9,6 @@ router.use('/articles', articles);
 
 router.use('/topics', topics);
 
-//router.use('/users', users);
+router.use('/users', users);
 
 module.exports = router;
