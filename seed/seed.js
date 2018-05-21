@@ -5,12 +5,13 @@ module.exports = {
     seedDB(articlesData, commentsData, topicsData, usersData) {
     return mongoose.connection.dropDatabase()
         .then(() => {
+            console.log('heeee')
             return Promise.all([Topic.insertMany(topicsData), User.insertMany(usersData)])
         })
         .then(([topicDocs, userDocs]) => {
-            articlesData.map(article => {
-                let topic = topicDocs.find(function(ele) {
-                    return ele.slug === article.topic
+            const articles = articlesData.map(article => {
+                const topic = topicDocs.find(topic => {
+                    return topic.slug === article.topic
                 })
                 
                 let user = userDocs.find(function(ele) {
@@ -19,27 +20,28 @@ module.exports = {
                 
                 article.belongs_to = topic._id
                 article.created_by = user._id
+                return article
             })
            
-            return Promise.all([topicDocs, userDocs, Article.insertMany(articlesData)])
+            return Promise.all([topicDocs, userDocs, Article.insertMany(articles)])
         })
         .then(([topicDocs, userDocs, articleDocs]) => {
-            commentsData.map(comment => {
-                let article = articleDocs.find(function (ele) {
-                    return ele.title === comment.belongs_to
-                })
+           const comments =  commentsData.map(comment => {
+                const articleID = articleDocs.find(article => article.title === comment.belongs_to)._id
                 
-                let user = userDocs.find(function(ele) {
-                    return ele.username === comment.created_by
+                let user = userDocs.find(function(user) {
+                    return user.username === comment.created_by
                 })
-                comment.belongs_to = article._id
+                comment.belongs_to = articleID
                 comment.created_by = user._id
+                return comment
             })
-            return Promise.all([topicDocs, userDocs, articleDocs, Comment.insertMany(commentsData)])
+            return Promise.all([topicDocs, userDocs, articleDocs, Comment.insertMany(comments)])
         })
         .then(data => {
+            
             console.log('database seeded!')
             return data
-        })
+        }).catch(console.log)
     }
 }
