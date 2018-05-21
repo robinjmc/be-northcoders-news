@@ -7,9 +7,11 @@ module.exports = {
             .catch(next)
     },
     getArticles (req, res, next) {
-        console.log(req.params)
-        Article.find({'topic': 'cats'})
-        .then(articles => res.send(articles))
+        Topic.findOne({'slug': req.params.topic})
+        .then(topic => {
+            Article.find({'belongs_to': topic._id})
+            .then(articles => res.send(articles))
+        })
         .catch(next)
     }
 }

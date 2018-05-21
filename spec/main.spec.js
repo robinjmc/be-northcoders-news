@@ -35,9 +35,7 @@ describe('API', function () {
             return request
             .get('/api/topics/cats/articles')
             .expect(200)
-            .then(res => console.log(res.body, '*****'))
-           // expect(res.body.topics.length).to.equal(2)
-            
+            .then(res => expect(res.body.length).to.equal(2))
         })
     })
    /* describe('/articles', () => {
