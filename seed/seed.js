@@ -5,43 +5,32 @@ module.exports = {
     seedDB(articlesData, commentsData, topicsData, usersData) {
     return mongoose.connection.dropDatabase()
         .then(() => {
-            console.log('heeee')
             return Promise.all([Topic.insertMany(topicsData), User.insertMany(usersData)])
         })
         .then(([topicDocs, userDocs]) => {
             const articles = articlesData.map(article => {
-                const topic = topicDocs.find(topic => {
-                    return topic.slug === article.topic
-                })
-                
-                let user = userDocs.find(function(ele) {
-                    return ele.username === article.created_by
-                })
-                
-                article.belongs_to = topic._id
-                article.created_by = user._id
+                const topicID = topicDocs.find(topic => topic.slug === article.topic)._id
+                const userID = userDocs.find(user => ele.username === article.created_by)._id
+                article.belongs_to = topicID
+                article.created_by = userID
                 return article
             })
-           
             return Promise.all([topicDocs, userDocs, Article.insertMany(articles)])
         })
         .then(([topicDocs, userDocs, articleDocs]) => {
            const comments =  commentsData.map(comment => {
                 const articleID = articleDocs.find(article => article.title === comment.belongs_to)._id
-                
-                let user = userDocs.find(function(user) {
-                    return user.username === comment.created_by
-                })
+                const userID = userDocs.find(user => user.username === comment.created_by)._id
                 comment.belongs_to = articleID
-                comment.created_by = user._id
+                comment.created_by = userID
                 return comment
             })
             return Promise.all([topicDocs, userDocs, articleDocs, Comment.insertMany(comments)])
         })
         .then(data => {
-            
             console.log('database seeded!')
             return data
-        }).catch(console.log)
+        })
+        .catch(console.log)
     }
 }
