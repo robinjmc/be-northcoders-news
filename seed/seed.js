@@ -10,7 +10,7 @@ module.exports = {
         .then(([topicDocs, userDocs]) => {
             const articles = articlesData.map(article => {
                 const topicID = topicDocs.find(topic => topic.slug === article.topic)._id
-                const userID = userDocs.find(user => ele.username === article.created_by)._id
+                const userID = userDocs.find(user => user.username === article.created_by)._id
                 article.belongs_to = topicID
                 article.created_by = userID
                 return article

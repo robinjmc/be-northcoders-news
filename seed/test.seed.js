@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+/*const mongoose = require('mongoose');
 const {seedDB} = require('./seed')
 const {articlesData, commentsData, topicsData, usersData} = require('./testData')
 
@@ -10,3 +10,4 @@ mongoose.connect('mongodb://localhost:27017/nc_news_test')
         return mongoose.disconnect()
     })
     .catch(console.log)
+*/

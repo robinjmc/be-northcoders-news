@@ -1,0 +1,12 @@
+const express = require('express');
+const {articles, comments, topics, users} = require('./index')
+
+const router = express.Router();
+
+router.use('/articles', articles);
+
+router.use('/comments', comments);
+
+router.use('/topics', topics);
+
+router.use('/users', users);
