@@ -11,7 +11,7 @@ const mongoose = require('mongoose');
 describe('API', function () {
     let articleDocs, commentDocs, topicDocs, userDocs
     beforeEach(function () {
-        this.timeout(10000)
+        this.timeout(6000)
         return seedDB(articlesData, commentsData, topicsData, usersData)
         .then(data => {
            //[articleDocs, commentDocs, topicDocs, userDocs] = data
@@ -38,24 +38,24 @@ describe('API', function () {
             .then(res => expect(res.body.length).to.equal(2))
         })
     })
-   /* describe('/articles', () => {
+    describe('/articles', () => {
             it('GET /articles', () => {
                 return request
                 .get('/api/articles')
                 .expect(200)    
-                .then(res => {
-                    expect(res.body.topics.length).to.equal(4)
-                })
-            })*/
-        /* it('GET /topics/:topic/articles', () => {
+                .then(res => expect(res.body.articles.length).to.equal(4))
+            })
+        it('GET /topics/:article_id/comments', () => {
+            //console.log(articleDocs, commentDocs, topicDocs, userDocs) <- these are assigned to the wrong data 
+            //the order of the data is (topic, user, article, comment)
                 return request
-                .get('/api/topics/cats/articles')
+                .get(`/api/articles/${topicDocs[0]._id}/comments`)
                 .expect(200)
-                .then(console.log
-                    //res => expect(res.body.topics.length).to.equal(2)
+                .then(res => expect(res.body.length).to.equal(2)
+                    //expect(res.body.topics.length).to.equal(2)
                 )
             })
-        })*/
+        })
     after(() => {
         mongoose.disconnect();
     })
