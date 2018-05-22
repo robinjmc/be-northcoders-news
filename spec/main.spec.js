@@ -44,7 +44,7 @@ describe('API', function () {
 
         })
     })
-    describe.only('/articles', () => {
+    describe('/articles', () => {
             it('GET /articles', () => {
                 return request
                 .get('/api/articles')
@@ -66,14 +66,14 @@ describe('API', function () {
                     expect(res.body[0].belongs_to).to.equal(`${articleDocs[0]._id}`)
                 })
             })
-            it.only('POST /articles/:article_id/comments w/existing user', () => {
+            it('POST /articles/:article_id/comments w/existing user', () => {
                 return request
                 .post(`/api/articles//${articleDocs[0]._id}/comments`)
                 .send({
                     'comment': 'foo',
                     'user': `${userDocs[0]._id}`
                 })
-                .expect(200)
+                .expect(201)
                 .then(({body}) => {
                     console.log(body)
                     expect(body.created_by).to.equal(`${userDocs[0]._id}`)
@@ -81,17 +81,47 @@ describe('API', function () {
                     
                 })
             })
-            it.only('POST /articles/:article_id/comments w/anon user', () => {
+            it('POST /articles/:article_id/comments w/anon user', () => {
                 return request
                 .post(`/api/articles//${articleDocs[0]._id}/comments`)
                 .send({
                     'comment': 'bar'
                 })
-                .expect(200)
+                .expect(201)
                 .then(({body}) => {
                     expect(body.body).to.equal('bar')
                     console.log(userDocs) // should I add new User to database? Would this use mongoose 'save'
                 })
+            })
+            it('PUT /articles/:article_id Increment vote', () => {
+                return request
+                .put(`/api/articles/${articleDocs[0]._id}?vote=up`)
+                .expect(201)
+                .then(({body}) => {
+                    expect(body.votes).to.equal(1)
+                })
+            })
+            it('PUT /articles/:article_id Decrement vote', () => {
+                return request
+                .put(`/api/articles/${articleDocs[1]._id}?vote=down`)
+                .expect(201)
+                .then(({body}) => {
+                    expect(body.votes).to.equal(articleDocs[1].votes -1)
+                })
+            })
+            it.only('ignores incorrect query', () => {
+                return request
+                .put(`/api/articles/${articleDocs[1]._id}?vote=down`)
+                .expect(201)
+                .then(({body}) => {
+                    return request
+                    .put(`/api/articles/${articleDocs[1]._id}?vote=bananas`)
+                    .expect(200)
+                    .then(({body}) => {
+                        expect(body.votes).to.equal(articleDocs[1].votes -1)
+                    })
+                })
+                
             })
         })
     describe('/users', () => {

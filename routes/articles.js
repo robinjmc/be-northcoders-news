@@ -9,4 +9,6 @@ router.get('/:article_id/comments', articles.getComments)
 
 router.post('/:article_id/comments', articles.postComment)
 
+router.put('/:article_id', articles.vote)
+
 module.exports = router;

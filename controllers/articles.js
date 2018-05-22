@@ -25,6 +25,7 @@ module.exports = {
                     created_by: user._id
                 })
                 .then(comment => {
+                    res.status(201)
                     res.send(comment)
                 })
             })
@@ -35,9 +36,21 @@ module.exports = {
                 created_by: req.body.user
             })
             .then(comment => {
+                res.status(201)
                 res.send(comment)
             })
+            .catch(next)
         }
         // else user.find({username: defaultUser}).then...
+    },
+    vote (req, res, next) {
+        const num = req.query.vote === 'up' ? 1 : req.query.vote === 'down' ? -1 : 0
+        const resStatus = num ? 201 : 200;
+        Article.findByIdAndUpdate({'_id':`${req.params.article_id}`}, {$inc:{'votes': num} }, {new: true})
+            .then(article => {
+                res.status(resStatus)
+                res.send(article)
+            })
+            .catch(next)
     }
 }
