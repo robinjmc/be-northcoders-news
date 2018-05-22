@@ -13,12 +13,11 @@ describe('API', function () {
     beforeEach(function () {
         this.timeout(6000)
         return seedDB(articlesData, commentsData, topicsData, usersData)
-        .then(data => {
-           //[articleDocs, commentDocs, topicDocs, userDocs] = data
-           articleDocs = data[0]
-           commentDocs = data[1]
-           topicDocs = data[2]
-           userDocs = data[3]
+        .then(({topics, users, articles, comments}) => {
+           articleDocs = articles
+           commentDocs = comments
+           topicDocs = topics
+           userDocs = users
         })
     })
 
@@ -46,10 +45,8 @@ describe('API', function () {
                 .then(res => expect(res.body.articles.length).to.equal(4))
             })
         it('GET /topics/:article_id/comments', () => {
-            //console.log(articleDocs, commentDocs, topicDocs, userDocs) <- these are assigned to the wrong data 
-            //the order of the data is (topic, user, article, comment)
                 return request
-                .get(`/api/articles/${topicDocs[0]._id}/comments`)
+                .get(`/api/articles/${articleDocs[0]._id}/comments`)
                 .expect(200)
                 .then(res => expect(res.body.length).to.equal(2)
                 )
