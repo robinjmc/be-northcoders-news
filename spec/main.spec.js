@@ -75,13 +75,12 @@ describe('API', function () {
                 })
                 .expect(201)
                 .then(({body}) => {
-                    console.log(body)
                     expect(body.created_by).to.equal(`${userDocs[0]._id}`)
                     expect(body.body).to.equal('foo')
                     
                 })
             })
-            it('POST /articles/:article_id/comments w/anon user', () => {
+            it.only('POST /articles/:article_id/comments w/anon user', () => {
                 return request
                 .post(`/api/articles//${articleDocs[0]._id}/comments`)
                 .send({
@@ -90,7 +89,6 @@ describe('API', function () {
                 .expect(201)
                 .then(({body}) => {
                     expect(body.body).to.equal('bar')
-                    console.log(userDocs) // should I add new User to database? Would this use mongoose 'save'
                 })
             })
             it('PUT /articles/:article_id Increment vote', () => {
@@ -109,7 +107,7 @@ describe('API', function () {
                     expect(body.votes).to.equal(articleDocs[1].votes -1)
                 })
             })
-            it.only('ignores incorrect query', () => {
+            it('ignores incorrect query', () => {
                 return request
                 .put(`/api/articles/${articleDocs[1]._id}?vote=down`)
                 .expect(201)
@@ -130,6 +128,57 @@ describe('API', function () {
             .get('/api/users/butter_bridge')
             .expect(200)
             .then(res => expect(res.body.username).to.equal('butter_bridge'))
+        })
+    })
+    describe('/comments', () => {
+        it('PUT /comments/:comment_id Increment vote', () => {
+            return request
+            .put(`/api/comments/${commentDocs[0]._id}?vote=up`)
+            .expect(201)
+            .then(({body}) => {
+                expect(body.votes).to.equal(commentDocs[0].votes + 1)
+            })
+        })
+        it('PUT /comments/:comment_id Decrement vote', () => {
+            return request
+            .put(`/api/comments/${commentDocs[0]._id}?vote=down`)
+            .expect(201)
+            .then(({body}) => {
+                expect(body.votes).to.equal(commentDocs[0].votes - 1)
+            })
+        })
+        it('ignores incorrect query', () => {
+            return request
+            .put(`/api/comments/${commentDocs[1]._id}?vote=down`)
+            .expect(201)
+            .then(({body}) => {
+                return request
+                .put(`/api/comments/${commentDocs[1]._id}?vote=bananas`)
+                .expect(200)
+                .then(({body}) => {
+                    expect(body.votes).to.equal(commentDocs[1].votes -1)
+                })
+            })
+            
+        })
+        it('DELETE /comments/:comment_id', () => {
+            return request
+            .post(`/api/articles//${articleDocs[0]._id}/comments`)
+            .send({
+                'comment': 'foobar',
+                'user': `${userDocs[0]._id}`
+            })
+            .expect(201)
+            .then(({body}) => {
+                expect(body.created_by).to.equal(`${userDocs[0]._id}`)
+                return request
+                .delete(`/api/comments/${body._id}`)
+                .expect(202)
+                .then(({body}) => {
+                    console.log(body)
+                    expect(body.body).to.equal('foobar')
+                })
+            })
         })
     })
     after(() => {

@@ -19,15 +19,14 @@ module.exports = {
                 name: 'user' + newUser,
                 avatar_url: 'http://standard.tj/img/general/avartar.jpg'
             }).then(user => {
-                Comment.create({
+                return Comment.create({
                     body: req.body.comment, 
                     belongs_to: req.params.article_id, 
                     created_by: user._id
                 })
-                .then(comment => {
-                    res.status(201)
-                    res.send(comment)
-                })
+            }).then(comment => {
+                res.status(201)
+                res.send(comment)
             })
         } else {
             Comment.create({

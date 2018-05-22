@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.use('/articles', articles);
 
-//router.use('/comments', comments);
+router.use('/comments', comments);
 
 router.use('/topics', topics);
 
