@@ -56,7 +56,7 @@ GET /api
 Serves an HTML page with documentation for all the available endpoints
 
 ``` http
-GET /api/topics
+GET /api/topics/
 ```
 
 Get all the topics
