@@ -68,8 +68,15 @@ describe('API', function () {
                     expect(res.body.articles[1].belongs_to).to.equal(`${topicDocs[0]._id}`)
                 })
             })
-            //GET /api/articles/:article_id <----------------
-            //Get an individual article
+            it('GET /articles/article_id', () => {//Get an individual article
+                return request
+                .get(`/api/articles/${articleDocs[0]._id}`)
+                .expect(200)
+                .then(({body}) => {
+                    expect(body._id).to.equal(`${articleDocs[0]._id}`)
+                    expect(body.body).to.equal('I find this existence challenging')
+                })
+            })
             it('GET /articles/:article_id/comments', () => { //Get all the comments for a individual article
                 return request
                 .get(`/api/articles/${articleDocs[0]._id}/comments`)

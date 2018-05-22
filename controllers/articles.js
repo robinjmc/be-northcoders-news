@@ -6,6 +6,13 @@ module.exports = {
             .then(articles => res.send({articles}))
             .catch(next)
     },
+    getByID (req, res, next) {
+        Article.findById(req.params.article_id)
+        .then(article => {
+            res.send(article)
+        })
+        .catch(next)
+    },
     getComments (req, res, next) {
         Comment.find({'belongs_to': req.params.article_id})
         .then(comments => res.send(comments))
