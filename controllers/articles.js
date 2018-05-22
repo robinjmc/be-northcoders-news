@@ -2,9 +2,12 @@ const {Article, Comment, User} = require('../models')
 
 module.exports = {
     getAll (req, res, next) {
-        Article.find()
-            .then(articles => res.send({articles}))
-            .catch(next)
+        Article.updateMany({}, {$set:{comment_count: 2}}, {upsert: true})
+        .then(articles => {
+            console.log(articles)
+            res.send(articles)
+        })
+        .cathc(next)
     },
     getByID (req, res, next) {
         Article.findById(req.params.article_id)
