@@ -21,7 +21,7 @@ describe('API', function () {
         })
     })
 
-    describe.only('/topics', () => { 
+    describe('/topics', () => { 
         it('GET /topics', () => { //Get all the topics
             return request
             .get('/api/topics')
