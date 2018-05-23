@@ -45,9 +45,7 @@ module.exports = {
                     belongs_to: req.params.article_id, 
                     created_by: userID
                 })
-            }).then(comment => {
-                res.status(201).send(comment)
-            })
+            }).then(comment => res.status(201).send(comment))
         // else user.find({username: defaultUser}).then...
         // how would this work in practice? would a new anon user be generated each time a visitor who is not logged in posts on the site? for a unquie anon visit that posts on various articles would we need cookies to keep track of the user and keep the anon username asigned to them?
 

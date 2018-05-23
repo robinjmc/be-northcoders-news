@@ -8,42 +8,26 @@ module.exports = {
     },
     getArticles (req, res, next) {
         Topic.findOne({'slug': req.params.topic_id})
-        .then(topic => {
-            Article.find({'belongs_to': topic._id})
-            .then(articles => res.send(articles))
-        })
-        .catch(next)
-    },
-    postArticle (req, res, next) {
-        if(!req.body.hasOwnProperty('user')) {
-            const newUser = Math.random().toString(18).substring(9)
-            User.create({
-                username: newUser,
-                name: 'user' + newUser,
-                avatar_url: 'http://standard.tj/img/general/avartar.jpg'
-            }).then(user => {
-                return Article.create({
-                    title: req.body.title,
-                    body: req.body.body, 
-                    belongs_to: req.params.topic_id, 
-                    created_by: user._id
-                })
-            }).then(Article => {
-                res.status(201)
-                res.send(Article)
-            })
-        } else {
-            Article.create({
-                title: req.body.title,
-                body: req.body.body,  
-                belongs_to: req.params.topic_id, 
-                created_by: req.body.user
-            })
-            .then(Article => {
-                res.status(201)
-                res.send(Article)
+            .then(topic => {
+                Article.find({'belongs_to': topic._id})
+                    .then(articles => res.send(articles))
             })
             .catch(next)
-        }
+    },
+    postArticle (req, res, next) {
+        const newUser = Math.random().toString(18).substring(9) //only existing users should be about to post articles any attempt to postArticle w/out user should redirect to create new user page
+        User.create({
+            username: newUser,
+            name: 'user' + newUser,
+            avatar_url: 'http://standard.tj/img/general/avartar.jpg'
+        }).then(user => {
+            let userID = req.body.hasOwnProperty('user') ? req.body.user : user._id
+            return Article.create({
+                title: req.body.title,
+                body: req.body.body, 
+                belongs_to: req.params.topic_id, 
+                created_by: userID
+            })
+        }).then(article => res.status(201).send(article))
     }
 }
