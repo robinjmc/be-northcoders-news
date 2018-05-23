@@ -58,7 +58,7 @@ describe('API', function () {
         })
     })
     describe('/articles', () => {
-            it('GET /articles', () => { //Returns all the articles & their indivdual comment count <-----------
+            it('GET /articles', () => { //Returns all the articles & their indivdual comment count
                 return request
                 .get('/api/articles')
                 .expect(200)    
@@ -129,20 +129,6 @@ describe('API', function () {
                     expect(body.votes).to.equal(articleDocs[1].votes -1)
                 })
             })
-            it('ignores incorrect query', () => {//Increment or Decrement the votes of an article by one.
-                return request
-                .put(`/api/articles/${articleDocs[1]._id}?vote=down`)
-                .expect(201)
-                .then(({body}) => {
-                    return request
-                    .put(`/api/articles/${articleDocs[1]._id}?vote=bananas`)
-                    .expect(200)
-                    .then(({body}) => {
-                        expect(body.votes).to.equal(articleDocs[1].votes -1)
-                    })
-                })
-                
-            })
         })
     describe('/users', () => {
         it('GET /users/:username', () => { //Returns a JSON object with the profile data for the specified user
@@ -169,20 +155,6 @@ describe('API', function () {
                 expect(body.votes).to.equal(commentDocs[0].votes - 1)
             })
         })
-        it('ignores incorrect query', () => { //Increment or Decrement the votes of a comment by one.
-            return request
-            .put(`/api/comments/${commentDocs[1]._id}?vote=down`)
-            .expect(201)
-            .then(({body}) => {
-                return request
-                .put(`/api/comments/${commentDocs[1]._id}?vote=bananas`)
-                .expect(200)
-                .then(({body}) => {
-                    expect(body.votes).to.equal(commentDocs[1].votes -1)
-                })
-            })
-            
-        })
         it('DELETE /comments/:comment_id', () => { //Deletes a comment
             return request
             .post(`/api/articles//${articleDocs[0]._id}/comments`)
@@ -200,6 +172,50 @@ describe('API', function () {
                     expect(body.body).to.equal('foobar')
                 })
             })
+        })
+    })
+
+    describe.only('Error handling', () => {
+        describe('/topics', () => {
+            //posting an article to none exisiting topic
+            //should posting topic with anon user throw an error?
+        })
+        describe('/articles', () => {
+            //posting an article to none exisiting topic
+            //should posting topic with anon user throw an error?
+            it('ignores incorrect query', () => {//ignores incorrect increment query
+                return request
+                .put(`/api/articles/${articleDocs[1]._id}?vote=down`)
+                .expect(201)
+                .then(({body}) => {
+                    return request
+                    .put(`/api/articles/${articleDocs[1]._id}?vote=bananas`)
+                    .expect(200)
+                    .then(({body}) => {
+                        expect(body.votes).to.equal(articleDocs[1].votes -1)
+                    })
+                })
+                
+            })
+        })
+        describe('/users', () => {
+            //throws correct error if user not found/invalid user_id
+        })
+        describe('/comments', () => {
+            it('ignores incorrect query', () => { //ignores incorrect increment query
+                return request
+                .put(`/api/comments/${commentDocs[1]._id}?vote=down`)
+                .expect(201)
+                .then(({body}) => {
+                    return request
+                    .put(`/api/comments/${commentDocs[1]._id}?vote=bananas`)
+                    .expect(200)
+                    .then(({body}) => {
+                        expect(body.votes).to.equal(commentDocs[1].votes -1)
+                    })
+                })
+            })
+           //throws correct error if comment_id does not exist
         })
     })
     after(() => {
