@@ -88,7 +88,7 @@ describe('API', function () {
                     expect(res.body[0].belongs_to).to.equal(`${articleDocs[0]._id}`)
                 })
             })
-            it('POST /articles/:article_id/comments w/existing user', () => { //Add a new comment to an article.
+            it.only('POST /articles/:article_id/comments w/existing user', () => { //Add a new comment to an article.
                 return request
                 .post(`/api/articles/${articleDocs[0]._id}/comments`)
                 .send({
@@ -102,7 +102,7 @@ describe('API', function () {
                     
                 })
             })
-            it('POST /articles/:article_id/comments w/anon user', () => { //Add a new comment to an article.
+            it.only('POST /articles/:article_id/comments w/anon user', () => { //Add a new comment to an article.
                 return request
                 .post(`/api/articles//${articleDocs[0]._id}/comments`)
                 .send({
