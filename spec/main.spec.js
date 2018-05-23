@@ -177,8 +177,28 @@ describe('API', function () {
 
     describe.only('Error handling', () => {
         describe('/topics', () => {
-            //posting an article to none exisiting topic
+            it('GET /topics/:topic_id/articles', () => { //Return correct error for non-existant topic
+                return request
+                .get('/api/topics/dogs/articles')
+                .expect(404)
+                .then(({body}) => {
+                    console.log(body)
+                })
+            })
             //should posting topic with anon user throw an error?
+            it('POST /topics/:topic_id/articles w/existing user', () => { //Return correct error for non-existant topic
+                return request
+                .post(`/api/topics/sheep/articles`)
+                .send({
+                    'title': 'this is my new article title', 
+                    'body': 'This is my new article content',
+                    'user': `${userDocs[0]._id}`
+                })
+                .expect(404)
+                .then(({body}) => {
+                    console.log(body)
+                })
+            })
         })
         describe('/articles', () => {
             //posting an article to none exisiting topic
@@ -200,6 +220,7 @@ describe('API', function () {
         })
         describe('/users', () => {
             //throws correct error if user not found/invalid user_id
+
         })
         describe('/comments', () => {
             it('ignores incorrect query', () => { //ignores incorrect increment query
