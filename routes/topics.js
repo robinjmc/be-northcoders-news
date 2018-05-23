@@ -1,12 +1,17 @@
 const express = require('express');
-const {topics} = require('../controllers');
+const {topics: {getAll, getArticles, postArticle}} = require('../controllers');
 
 const router = express.Router();
 
-router.get('/', topics.getAll)
+router.get('/', getAll)
 
-router.get('/:topic_id/articles', topics.getArticles)
+router.get('/:topic_id/articles', getArticles)
 
-router.post('/:topic_id/articles', topics.postArticle)
+router.post('/:topic_id/articles', postArticle)
+
+// router.route(/:topic_id/articles)
+//        .get(getArticles)
+//        .post(postArticle)
+
 
 module.exports = router;

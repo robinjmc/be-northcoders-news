@@ -6,8 +6,7 @@ module.exports = {
         const resStatus = num ? 201 : 200;
         Comment.findByIdAndUpdate({'_id':`${req.params.comment_id}`}, {$inc:{'votes': num} }, {new: true})
             .then(comment => {
-                res.status(resStatus)
-                res.send(comment)
+                res.status(resStatus).send(comment)
             })
             .catch(next)
     },

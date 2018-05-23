@@ -58,15 +58,15 @@ describe('API', function () {
         })
     })
     describe('/articles', () => {
-            it.only('GET /articles', () => { //Returns all the articles & their indivdual comment count <-----------
+            it('GET /articles', () => { //Returns all the articles & their indivdual comment count <-----------
                 return request
                 .get('/api/articles')
                 .expect(200)    
-                .then(({body:{articles}}) => {
-                    expect(articles).to.have.lengthOf(4)
-                    expect(articles[2].created_by).to.equal(`${userDocs[0]._id}`)
-                    expect(articles[1].belongs_to).to.equal(`${topicDocs[0]._id}`)
-                    expect(articles[0].comment_count).to.equal(2)
+                .then(({body}) => {
+                    expect(body).to.have.lengthOf(4)
+                    expect(body[2].created_by).to.equal(`${userDocs[0]._id}`)
+                    expect(body[1].belongs_to).to.equal(`${topicDocs[0]._id}`)
+                    expect(body[0].comment_count).to.equal(2)
                 })
             })
             it('GET /articles/article_id', () => {//Get an individual article

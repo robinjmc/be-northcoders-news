@@ -1,13 +1,23 @@
 const {Article, Comment, User} = require('../models')
-
+// populate
 module.exports = {
     getAll (req, res, next) {
-        Article.updateMany({}, {$set:{comment_count: 2}}, {upsert: true})
+        Article.find().lean()
         .then(articles => {
-            console.log(articles)
-            res.send(articles)
-        })
-        .cathc(next)
+            Promise.all([Comment.find().lean(), articles])
+                .then(([commentArr, articles]) => {
+                    const belongsArr = commentArr.map(comment => comment.belongs_to)
+                    const articlesAndComments = articles.map(article => {
+                        const countComments = belongsArr.filter(belongID => {
+                            return `${belongID}` === `${article._id}`
+                        })
+                        article.comment_count = countComments.length
+                        return article
+                    })
+                res.status(200).send(articlesAndComments)
+                }) 
+            })
+        .catch(next)
     },
     getByID (req, res, next) {
         Article.findById(req.params.article_id)
@@ -15,6 +25,9 @@ module.exports = {
             res.send(article)
         })
         .catch(next)
+        // (err =>  {
+        //    'casterror' return next({status:404})
+        // })
     },
     getComments (req, res, next) {
         Comment.find({'belongs_to': req.params.article_id})
@@ -35,8 +48,7 @@ module.exports = {
                     created_by: user._id
                 })
             }).then(comment => {
-                res.status(201)
-                res.send(comment)
+                res.status(201).send(comment)
             })
         } else {
             Comment.create({

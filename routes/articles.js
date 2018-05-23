@@ -1,16 +1,16 @@
 const express = require('express');
-const {articles} = require('../controllers');
+const {articles : {getAll, getByID, getComments, postComment, vote}} = require('../controllers');
 
 const router = express.Router();
 
-router.get('/', articles.getAll)
+router.get('/', getAll)
 
-router.get('/:article_id', articles.getByID)
+router.get('/:article_id', getByID)
 
-router.get('/:article_id/comments', articles.getComments)
+router.get('/:article_id/comments', getComments)
 
-router.post('/:article_id/comments', articles.postComment)
+router.post('/:article_id/comments', postComment)
 
-router.put('/:article_id', articles.vote)
+router.put('/:article_id', vote)
 
 module.exports = router;
