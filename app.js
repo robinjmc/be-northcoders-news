@@ -1,9 +1,9 @@
-if (process.env.NODE_ENV !== 'test') process.env.NODE_ENV = 'dev';
+process.env.NODE_ENV =  process.env.NODE_ENV || 'dev';
 
 const mongoose = require('mongoose')
 const app = require('express')();
 const {json} = require('body-parser')
-const {DB_URL} = require(`./config`)
+const {DB_URL} = require('./config') || process.env ;
 const api = require('./routes/api')
 
 mongoose.connect(DB_URL)

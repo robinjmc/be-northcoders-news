@@ -175,7 +175,7 @@ describe('API', function () {
         })
     })
 
-    describe.only('Error handling', () => {
+    describe('Error handling', () => {
         describe('/topics', () => {
             it('GET /topics/:topic_id/articles', () => { //Return correct error for non-existant topic
                 return request
