@@ -16,7 +16,10 @@ app.use(json());
 app.use('/api', api);
 
 app.use((err, req, res, next) => {
-    if(err.status === 404 || err.status === 501) return res.status(err.status).send(err);
+    //CastError err.name validationError === 400
+    //CastError is for invalid ObjectId ValidationError is when the data doesnt match the schema
+    if(err.name === 'CastError' || 'ValidationError') return res.status(400).send(err);
+    if(err.status === 404 || err.status === 501 || err.name === 'TypeError') return res.status(err.status).send(err);
     next();
 })
 

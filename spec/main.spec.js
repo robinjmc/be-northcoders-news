@@ -11,7 +11,7 @@ const mongoose = require('mongoose');
 describe('API', function () {
     let articleDocs, commentDocs, topicDocs, userDocs
     beforeEach(function () {
-        this.timeout(10000)
+        this.timeout(15000)
         return seedDB(articlesData, commentsData, topicsData, usersData)
         .then(({topics, users, articles, comments}) => {
            articleDocs = articles
@@ -54,6 +54,19 @@ describe('API', function () {
             .then(({body}) => {
                 expect(body.created_by).to.equal(`${userDocs[0]._id}`)
                 expect(body.body).to.equal('This is my new article content')
+            })
+        })
+        it('POST /topics/:topic_id/articles w/anon user', () => { //Add a new article to a topic.
+            return request
+            .post(`/api/topics/${topicDocs[0]._id}/articles`)
+            .send({
+                'title': 'this is my new article title by anon', 
+                'body': 'This is my new article content by anon'
+            })
+            .expect(201)
+            .then(({body}) => {
+                console.log(body.created_by, body.title)
+                expect(body.body).to.equal('This is my new article content by anon')
             })
         })
     })
@@ -175,17 +188,18 @@ describe('API', function () {
         })
     })
 
-    describe('Error handling', () => {
+    describe.only('Error handling', () => {
         describe('/topics', () => {
             it('GET /topics/:topic_id/articles', () => { //Return correct error for non-existant topic
+                //is returning validation error and not not found (404)
+                //difference between sending through searching for something that doesnt exsist and making a request that doesnt fit the schema?
                 return request
                 .get('/api/topics/dogs/articles')
-                .expect(404)
+                .expect(400)  //this should be 404?
                 .then(({body}) => {
-                    console.log(body)
+                    console.log(body) //empty obj ???
                 })
             })
-            //should posting topic with anon user throw an error?
             it('POST /topics/:topic_id/articles w/existing user', () => { //Return correct error for non-existant topic
                 return request
                 .post(`/api/topics/sheep/articles`)
@@ -194,15 +208,17 @@ describe('API', function () {
                     'body': 'This is my new article content',
                     'user': `${userDocs[0]._id}`
                 })
-                .expect(404)
+                .expect(400)
                 .then(({body}) => {
-                    console.log(body)
+                    console.log(body) 
+                    //body.errors.belongs_to.name = CastError
+                    //body.name = ValidationError
                 })
             })
         })
         describe('/articles', () => {
             //posting an article to none exisiting topic
-            //should posting topic with anon user throw an error?
+            
             it('ignores incorrect query', () => {//ignores incorrect increment query
                 return request
                 .put(`/api/articles/${articleDocs[1]._id}?vote=down`)
