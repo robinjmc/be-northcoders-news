@@ -3,8 +3,7 @@ process.env.NODE_ENV =  process.env.NODE_ENV || 'dev';
 const mongoose = require('mongoose')
 const app = require('express')();
 const {json} = require('body-parser')
-const {DB_URL} = require('./config') || process.env ;
-console.log(DB_URL)
+const DB_URL = process.env.DB_URL || require('./config').DB_URL
 const api = require('./routes/api')
 
 mongoose.connect(DB_URL)
