@@ -16,10 +16,12 @@ app.use(json());
 app.use('/api', api);
 
 app.use((err, req, res, next) => {
+    console.log('in next block')
+    console.log(JSON.stringify(err, null, 2))
     //CastError err.name validationError === 400
     //CastError is for invalid ObjectId ValidationError is when the data doesnt match the schema
-    if(err.name === 'CastError' || 'ValidationError') return res.status(400).send(err);
-    if(err.status === 404 || err.status === 501 || err.name === 'TypeError') return res.status(err.status).send(err);
+    if(err.name === 'CastError' || err.name === 'ValidationError') return res.status(400).send({message: 'Bad Request'});
+    if(err.status === 404 || err.status === 501 || err.name === 'TypeError') return res.status(err.status).send({message: 'Not Found'});
     next();
 })
 

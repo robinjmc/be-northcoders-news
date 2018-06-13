@@ -21,7 +21,12 @@ module.exports = {
     },
     getByID (req, res, next) {
         Article.findById(req.params.article_id)
-        .then(article => res.send(article))
+        .then(article => {
+            
+            if (!article) throw {status: 404}
+            console.log(article, 'ok*********')
+            res.send(article)
+        })
         .catch(next)
         // (err =>  {
         //    'casterror' return next({status:404})
@@ -29,7 +34,11 @@ module.exports = {
     },
     getComments (req, res, next) {
         Comment.find({'belongs_to': req.params.article_id})
-        .then(comments => res.send(comments))
+        .then(comments => {
+            console.log(comments)
+            if(!comments.length) throw {status: 404}
+            res.send(comments)
+        })
         .catch(next)
     },
     postComment (req, res, next) {
@@ -46,6 +55,7 @@ module.exports = {
                     created_by: userID
                 })
             }).then(comment => res.status(201).send(comment))
+            .catch(next)
         // else user.find({username: defaultUser}).then...
         // how would this work in practice? would a new anon user be generated each time a visitor who is not logged in posts on the site? for a unquie anon visit that posts on various articles would we need cookies to keep track of the user and keep the anon username asigned to them?
 

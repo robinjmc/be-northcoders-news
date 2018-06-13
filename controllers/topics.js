@@ -7,11 +7,12 @@ module.exports = {
             .catch(next)
     },
     getArticles(req, res, next) {
-        Topic.findOne({ 'slug': req.params.topic_id })
+        Topic.findOne({ slug: req.params.topic_id })
             .then(topic => {
-                Article.find({ 'belongs_to': topic._id })
-                    .then(articles => res.send(articles))
+                if (!topic) throw {status: 404}
+                return Article.find({ 'belongs_to': topic._id })
             })
+            .then(articles => res.send(articles))
             .catch(next)
     },
     postArticle(req, res, next) {
@@ -30,7 +31,11 @@ module.exports = {
                     created_by: userID
                 })
             })
-            .then(article => res.status(201).send(article))
+            .then(article => {
+                console.log(article)
+                if (!article) throw {status: 404}
+                res.status(201).send(article)
+            })
             .catch(next)
 
     }

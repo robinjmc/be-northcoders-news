@@ -6,5 +6,4 @@ module.exports = {
         .then(user => res.send(user))
         .catch(next)
     }
-    //create new user function
 }

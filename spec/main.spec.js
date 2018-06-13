@@ -188,19 +188,17 @@ describe('API', function () {
         })
     })
 
-    describe.only('Error handling', () => {
-        describe('/topics', () => {
+    describe('Error handling', () => {
+        describe.only('/topics', () => {
             it('GET /topics/:topic_id/articles', () => { //Return correct error for non-existant topic
-                //is returning validation error and not not found (404)
-                //difference between sending through searching for something that doesnt exsist and making a request that doesnt fit the schema?
                 return request
                 .get('/api/topics/dogs/articles')
-                .expect(400)  //this should be 404?
+                .expect(404)  
                 .then(({body}) => {
-                    console.log(body) //empty obj ???
+                    expect(body.message).to.equal('Not Found')
                 })
             })
-            it('POST /topics/:topic_id/articles w/existing user', () => { //Return correct error for non-existant topic
+            it('POST /topics/sheep/articles w/existing user', () => { //Return correct error for non-existant topic
                 return request
                 .post(`/api/topics/sheep/articles`)
                 .send({
@@ -210,16 +208,83 @@ describe('API', function () {
                 })
                 .expect(400)
                 .then(({body}) => {
-                    console.log(body) 
-                    //body.errors.belongs_to.name = CastError
-                    //body.name = ValidationError
+                    expect(body.message).to.equal('Bad Request')
                 })
             })
+            //complete this!!!!!!! need to check if topic_id exists
+            /*it.only('POST /topics/:topic_id/articles w/existing user', () => { //Return correct error for non-existant topic
+                return request
+                .post(`/api/topics/${commentDocs[0]._id}/articles`)
+                .send({
+                    'title': 'this is my new article title', 
+                    'body': 'This is my new article content',
+                    'user': `${userDocs[0]._id}`
+                })
+                .expect(404)
+                .then(({body}) => {
+                    expect(body.message).to.equal('Not Found')
+                })
+            })*/
         })
         describe('/articles', () => {
-            //posting an article to none exisiting topic
-            
-            it('ignores incorrect query', () => {//ignores incorrect increment query
+            //getting non-exisiting article
+            it('get articles/foo', () => {
+                return request
+                .get('/api/articles/foo')
+                .expect(400)  
+                .then(({body}) => {
+                    expect(body.message).to.equal('Bad Request')
+                })
+            })
+            it('get articles/comment_id', () => {
+                return request
+                .get(`/api/articles/${commentDocs[0]._id}`)
+                .expect(404)  
+                .then(({body}) => {
+                    expect(body.message).to.equal('Not Found')
+                })
+            })
+            it('get articles/comment_id/comments', () => {
+                return request
+                .get(`/api/articles/${commentDocs[0]._id}/comments`)
+                .expect(404)  
+                .then(({body}) => {
+                    expect(body.message).to.equal('Not Found')
+                })
+            })
+            it('get articles/bar/comments', () => {
+                return request
+                .get(`/api/articles/bar/comments`)
+                .expect(400)  
+                .then(({body}) => {
+                    expect(body.message).to.equal('Bad Request')
+                })
+            })
+             
+            it('POST /articles/:article_id/comments non-exisiting article', () => { //Return correct error for non-existant article
+                return request
+                .post(`/api/articles/mouse/comments`)
+                .send({ 
+                    'comment': 'foobarfoo'
+                })
+                .expect(400)
+                .then(({body}) => {
+                    expect(body.message).to.equal('Bad Request')
+                })
+            })
+            it('POST /articles/:article_id/comments non-formatted comment', () => { //returns correct error for wrongly formatted post request
+                return request
+                .post(`/api/articles/${articleDocs[0]._id}/comments`)
+                .send({ 
+                    'body': 'barfoobarfoo'
+                })
+                .expect(400)
+                .then(({body}) => {
+                    expect(body.message).to.equal('Bad Request')
+                })
+            })
+
+            it('PUT ignores incorrect query', () => { //ignores incorrect increment query
                 return request
                 .put(`/api/articles/${articleDocs[1]._id}?vote=down`)
                 .expect(201)
@@ -253,6 +318,7 @@ describe('API', function () {
                 })
             })
            //throws correct error if comment_id does not exist
+            
         })
     })
     after(() => {
