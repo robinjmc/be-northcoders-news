@@ -143,7 +143,7 @@ describe('API', function () {
                 })
         })
     })
-    describe('/users', () => {
+    describe.only('/users', () => {
         it('GET /users/:username', () => { //Returns a JSON object with the profile data for the specified user
             return request
                 .get('/api/users/butter_bridge')
@@ -320,7 +320,7 @@ describe('API', function () {
             //throws correct error if user not found/invalid user_id
 
         })
-        describe.only('/comments', () => {
+        describe('/comments', () => {
             it('ignores incorrect increment query', () => { //ignores incorrect increment query
                 return request
                     .put(`/api/comments/${commentDocs[1]._id}?vote=down`)
