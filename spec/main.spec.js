@@ -143,12 +143,15 @@ describe('API', function () {
                 })
         })
     })
-    describe.only('/users', () => {
-        it('GET /users/:username', () => { //Returns a JSON object with the profile data for the specified user
+    describe('/users', () => {
+        it('GET /users/:user_id', () => { //Returns a JSON object with the profile data for the specified user
             return request
-                .get('/api/users/butter_bridge')
+                .get(`/api/users/${userDocs[0]._id}`)
                 .expect(200)
-                .then(res => expect(res.body.username).to.equal('butter_bridge'))
+                .then(({ body }) => {
+                    expect(body.username).to.equal('butter_bridge')
+                    expect(body._id).to.equal(`${userDocs[0]._id}`)
+                })
         })
     })
     describe('/comments', () => {
@@ -317,8 +320,22 @@ describe('API', function () {
             })
         })
         describe('/users', () => {
-            //throws correct error if user not found/invalid user_id
-
+            it('GET /users/:user_id', () => { //throws correct error if user not found/invalid user_id
+                return request
+                    .get(`/api/users/${articleDocs[0]._id}`)
+                    .expect(404)
+                    .then(({ body }) => {
+                        expect(body.message).to.equal('Not Found')
+                    })
+            })
+            it('GET /users/:user_id', () => { //throws correct error if user not formatted properly
+                return request
+                    .get(`/api/users/steve`)
+                    .expect(400)
+                    .then(({ body }) => {
+                        expect(body.message).to.equal('Bad Request')
+                    })
+            })
         })
         describe('/comments', () => {
             it('ignores incorrect increment query', () => { //ignores incorrect increment query
