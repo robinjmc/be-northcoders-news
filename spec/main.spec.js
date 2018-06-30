@@ -117,7 +117,7 @@ describe('API', function () {
         })
         it('POST /articles/:article_id/comments w/anon user', () => { //Add a new comment to an article.
             return request
-                .post(`/api/articles//${articleDocs[0]._id}/comments`)
+                .post(`/api/articles/${articleDocs[0]._id}/comments`)
                 .send({
                     'comment': 'bar'
                 })
