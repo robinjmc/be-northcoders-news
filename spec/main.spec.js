@@ -56,19 +56,7 @@ describe('API', function () {
                     expect(body.body).to.equal('This is my new article content')
                 })
         })
-        it('POST /topics/:topic_id/articles w/anon user', () => { //Add a new article to a topic.
-            return request
-                .post(`/api/topics/${topicDocs[0]._id}/articles`)
-                .send({
-                    'title': 'this is my new article title by anon',
-                    'body': 'This is my new article content by anon'
-                })
-                .expect(201)
-                .then(({ body }) => {
-                    console.log(body.created_by, body.title)
-                    expect(body.body).to.equal('This is my new article content by anon')
-                })
-        })
+        
     })
     describe('/articles', () => {
         it('GET /articles', () => { //Returns all the articles & their indivdual comment count
@@ -144,6 +132,15 @@ describe('API', function () {
         })
     })
     describe('/users', () => {
+        it('Get /users/', () => {
+            return request
+                .get('/api/users/')
+                .expect(200)
+                .then(({ body }) => {
+                    expect(body.users).to.have.lengthOf(2)
+                    expect(body.users[0]._id).to.equal(`${userDocs[0]._id}`)
+                })
+        })
         it('GET /users/:user_id', () => { //Returns a JSON object with the profile data for the specified user
             return request
                 .get(`/api/users/${userDocs[0]._id}`)
@@ -229,6 +226,18 @@ describe('API', function () {
                         'title': 'this is my new article title',
                         'body': 'This is my new article content',
                         'user': `${userDocs[0]._id}`
+                    })
+                    .expect(400)
+                    .then(({ body }) => {
+                        expect(body.message).to.equal('Bad Request')
+                    })
+            })
+            it('POST /topics/:topic_id/articles w/out user id', () => {
+                return request
+                    .post(`/api/topics/${topicDocs[0]._id}/articles`)
+                    .send({
+                        'title': 'this is my new article title by anon',
+                        'body': 'This is my new article content by anon'
                     })
                     .expect(400)
                     .then(({ body }) => {

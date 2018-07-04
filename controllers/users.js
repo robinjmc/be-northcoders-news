@@ -8,8 +8,10 @@ module.exports = {
                 res.send(user)
             })
             .catch(next)
-        // User.findOne(req.params)
-        // .then(user => res.send(user))
-        // .catch(next)
+    },
+    getAll (req, res, next){
+        User.find()
+        .then(users => res.send({ users }))
+        .catch(next)
     }
 }
