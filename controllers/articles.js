@@ -3,18 +3,18 @@ const { Article, Comment, User } = require('../models')
 exports.getAll = (req, res, next) => {
     Article.find().lean()
         .then(articles => {
-            Promise.all([Comment.find().lean(), articles])
-                .then(([commentArr, articles]) => {
-                    const belongsArr = commentArr.map(comment => comment.belongs_to)
-                    const articlesAndComments = articles.map(article => {
-                        const countComments = belongsArr.filter(belongID => {
-                            return `${belongID}` === `${article._id}`
-                        })
-                        article.comment_count = countComments.length
-                        return article
-                    })
-                    res.send(articlesAndComments)
+            return Promise.all([Comment.find().lean(), articles])
+        })
+        .then(([commentArr, articles]) => {
+            const belongsArr = commentArr.map(comment => comment.belongs_to)
+            const articlesAndComments = articles.map(article => {
+                const countComments = belongsArr.filter(belongID => {
+                    return `${belongID}` === `${article._id}`
                 })
+                article.comment_count = countComments.length
+                return article
+            })
+            res.send(articlesAndComments)
         })
         .catch(next)
 }
