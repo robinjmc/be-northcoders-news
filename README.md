@@ -1,136 +1,87 @@
-## Northcoders News API
+# Project Title
 
-### Background
+One Paragraph of project description goes here
 
-We will be building the API which to use in the Northcoders News Sprint during the Front End block of the course.
+## Getting Started
 
-Our database will be MongoDB. Your Mongoose models have been created for you so that you can see what the data should look like.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-We have also built a functioning API at http://northcoders-news-api.herokuapp.com/.
+### Prerequisites
 
-Look closely at the response you get for each route on http://northcoders-news-api.herokuapp.com/ You will notice that we also send data such as the comment count for each article. You will need to think carefully about how to do this in your API.
+What things you need to install the software and how to install them
 
-### Mongoose Documentation
-
-The below are all model methods that you call on your models.
-
-* [find](http://mongoosejs.com/docs/api.html#model_Model.find)
-* [findOne](http://mongoosejs.com/docs/api.html#model_Model.findOne)
-* [findOneAndUpdate](http://mongoosejs.com/docs/api.html#model_Model.findOneAndUpdate)
-* [findOneAndRemove](http://mongoosejs.com/docs/api.html#model_Model.findOneAndRemove)
-* [findById](http://mongoosejs.com/docs/api.html#model_Model.findById)
-* [findByIdAndUpdate](http://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate)
-* [findByIdAndRemove](http://mongoosejs.com/docs/api.html#model_Model.findByIdAndRemove)
-* [update](http://mongoosejs.com/docs/api.html#model_Model.update)
-
-There are also some methods that can be called on the documents that get returned. These are:
-
-* [remove](http://mongoosejs.com/docs/api.html#model_Model-remove)
-* [save](http://mongoosejs.com/docs/api.html#model_Model-save)
-* [count](http://mongoosejs.com/docs/api.html#model_Model.count)
-
-### Step 1 - Seeding
-
-Data has been provided for both testing and development environments so you will need to write a seed function to seed your database. You should think about how you will write your seed file to use either test data or dev data depending on the environment that you're running in.
-
-1.  You will need to seed the topics, followed by the articles and the users. Each article should belong to a topic, referenced by a topic's \_id property. /*Each article should also have a random number of comments.*/ Each comment should have been created by a random user (referenced by their \_id property) and should also belong to a specific article (referenced by its \_id property too). Use a library such as [faker](https://www.npmjs.com/package/faker) or [chance](https://www.npmjs.com/package/chance) to generate random comments.
-
-### Step 2 - Building and Testing
-
-1.  Build your Express App
-2.  Mount an API Router onto your app
-3.  Define the routes described below
-4.  Define controller functions for each of your routes
-5.  Use proper project configuration from the offset, being sure to treat development and test differently.
-6.  Test each route as you go. Remember to test the happy and the unhappy paths! Make sure your error messages are helpful and your error status codes are chosen correctly. Remember to seed the test database using the seeding function and make the saved data available to use within your test suite.
-7.  Once you have all your routes start to tackle responding with the vote and comment counts on article requests like this http://northcoders-news-api.herokuapp.com/api/articles
-
-**HINT** Make sure to drop and reseed your test database with every test. This will make it much easier to keep track of your data throughout. In order for this to work, you are going to need to keep track of the MongoIDs your seeded docs have been given. In order to do this, you might want to consider what your seed file returns, and how you can use this in your tests.
-
-### Routes
-
-``` http
-GET /api
+```
+Give examples
 ```
 
-Serves an HTML page with documentation for all the available endpoints
+### Installing
 
-``` http
-GET /api/topics/
+A step by step series of examples that tell you how to get a development env running
+
+Say what the step will be
+
+```
+Give the example
 ```
 
-Get all the topics
+And repeat
 
-``` http
-GET /api/topics/:topic_id/articles
+```
+until finished
 ```
 
-Return all the articles for a certain topic
+End with an example of getting some data out of the system or using it for a little demo
 
-``` http
-POST /api/topics/:topic_id/articles
+## Running the tests
+
+Explain how to run the automated tests for this system
+
+### Break down into end to end tests
+
+Explain what these tests test and why
+
+```
+Give an example
 ```
 
-Add a new article to a topic. This route requires a JSON body with title and body key value pairs
-e.g: `{ "title": "this is my new article title", "body": "This is my new article content"}`
+### And coding style tests
 
-``` http
-GET /api/articles
+Explain what these tests test and why
+
+```
+Give an example
 ```
 
-Returns all the articles
+## Deployment
 
-``` http
-GET /api/articles/:article_id
-```
+Add additional notes about how to deploy this on a live system
 
-Get an individual article
+## Built With
 
-``` http
-GET /api/articles/:article_id/comments
-```
+* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
+* [Maven](https://maven.apache.org/) - Dependency Management
+* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
 
-Get all the comments for a individual article
+## Contributing
 
-``` http
-POST /api/articles/:article_id/comments
-```
+Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
 
-Add a new comment to an article. This route requires a JSON body with a comment key and value pair
-e.g: `{"comment": "This is my new comment"}`
+## Versioning
 
-``` http
-PUT /api/articles/:article_id
-```
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
 
-Increment or Decrement the votes of an article by one. This route requires a vote query of 'up' or 'down'
-e.g: `/api/articles/:article_id?vote=up`
+## Authors
 
-``` http
-PUT /api/comments/:comment_id
-```
+* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
 
-Increment or Decrement the votes of a comment by one. This route requires a vote query of 'up' or 'down'
-e.g: `/api/comments/:comment_id?vote=down`
+See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
-``` http
-DELETE /api/comments/:comment_id
-```
+## License
 
-Deletes a comment
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
-``` http
-GET /api/users/:username
-```
+## Acknowledgments
 
-Returns a JSON object with the profile data for the specified user.
-
-### Step 3 - Hosting
-
-Once you are happy with your seed/dev file, prepare your project for production. You will need to seed the development data to mLab, and host the API on Heroku. If you've forgotten how to do this, you may want to look at this tutorial! https://www.sitepoint.com/deploy-rest-api-in-30-mins-mlab-heroku/
-
-### Step 4 - Preparing for your review and portfolio
-
-Finally, you should write a README for this project (and remove this one). The README should be broken down like this: https://gist.github.com/PurpleBooth/109311bb0361f32d87a2
-
-It should also include the link where your herokuapp is hosted.
+* Hat tip to anyone whose code was used
+* Inspiration
+* etc

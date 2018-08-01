@@ -1,10 +1,10 @@
 const express = require('express');
-const {comments} = require('../controllers');
+const {comments: {vote, deleteComment}} = require('../controllers');
 
 const router = express.Router();
 
-router.put('/:comment_id', comments.vote)
-
-router.delete('/:comment_id', comments.delete)
+router.route('/:comment_id')
+        .put(vote)
+        .delete(deleteComment)
 
 module.exports = router;

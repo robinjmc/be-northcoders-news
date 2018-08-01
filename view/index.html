@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Routes</h1>
+    <h3>GET</h3>
+    <h4>/</h4>
+    <p>Renders this HTML page</p>
+    
+    <h4>/api/topics</h4>
+    <p>Get all the topics</p>
+    
+    <h4>/api/topics/:topic_id/articles</h4>
+    <p>Return all the articles for a certain topic</p>
+    
+    <h4>/api/articles</h4>
+    <p>Returns all the articles</p>
+    
+    <h4>/api/articles/:article_id</h4>
+    <p>Get an individual article</p>
+    
+    <h4>/api/articles/:article_id/comments</h4>
+    <p>Get all the comments for a individual article</p>
+
+    <h4>/api/users/</h4>
+    <p>Returns all users.</p>
+
+    <h4>/api/users/:username</h4>
+    <p>Returns a JSON object with the profile data for the specified user.</p>
+
+    <h3>POST</h3>
+    <h4>/api/topics/:topic_id/articles</h4>
+    <p>Add a new article to a topic. This route requires a JSON body with title and body key value pairs</p>
+    
+    <h4>/api/articles/:article_id/comments</h4>
+    <p>Add a new comment to an article. This route requires a JSON body with a comment key and value pair</p>
+
+    <h3>PUT</h3>
+    <h4>/api/articles/:article_id</h4>
+    <p>Increment or Decrement the votes of an article by one. This route requires a vote query of 'up' or 'down'</p>
+
+    <h4>/api/comments/:comment_id</h4>
+    <p>Increment or Decrement the votes of a comment by one. This route requires a vote query of 'up' or 'down'</p>
+
+    <h3>DELETE</h3>
+    <h4>/api/comments/:comment_id</h4>
+    <p>Deletes a comment</p>
+
+</body>
+</html>

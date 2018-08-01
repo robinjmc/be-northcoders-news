@@ -11,6 +11,3 @@ mongoose.connect(DB_URL)
         return mongoose.disconnect()
     })
     .catch(console.log)
-
-    //if test connect to nc_news_test else connect to nc_news
-    //should I merge test and dev files so the connection to the database changes depending on whether its a test or not what is best practice

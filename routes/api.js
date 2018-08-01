@@ -1,5 +1,5 @@
 const express = require('express');
-const {articles, comments, topics, users} = require('./index')
+const {articles, comments, topics, users, landing} = require('./index')
 
 const router = express.Router();
 

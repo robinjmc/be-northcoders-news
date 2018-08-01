@@ -5,12 +5,12 @@ const router = express.Router();
 
 router.get('/', getAll)
 
-router.get('/:article_id', getByID)
+router.route('/:article_id')
+        .get(getByID)
+        .put(vote)
 
-router.get('/:article_id/comments', getComments)
-
-router.post('/:article_id/comments', postComment)
-
-router.put('/:article_id', vote)
+router.route('/:article_id/comments')
+        .get(getComments)
+        .post(postComment)
 
 module.exports = router;
