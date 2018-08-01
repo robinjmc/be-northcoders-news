@@ -21,6 +21,10 @@ describe('API', function () {
             })
     })
 
+    after(() => {
+        mongoose.disconnect();
+    })
+    
     describe('/topics', () => {
         it('GET /topics', () => { //Get all the topics
             return request
@@ -37,7 +41,6 @@ describe('API', function () {
                 .get(`/api/topics/${topicDocs[1]._id}/articles`)
                 .expect(200)
                 .then(res => {
-                    console.log(res.body)
                     expect(res.body).to.have.lengthOf(2)
                     expect(res.body[0].belongs_to).to.equal(`${topicDocs[1]._id}`)
                     expect(res.body[1].belongs_to).to.equal(`${topicDocs[1]._id}`)
@@ -405,9 +408,6 @@ describe('API', function () {
             })
 
         })
-    })
-    after(() => {
-        mongoose.disconnect();
     })
 })
 

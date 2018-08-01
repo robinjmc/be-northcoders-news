@@ -24,7 +24,6 @@ module.exports = {
             return Promise.all([topicDocs, userDocs, articleDocs, Comment.insertMany(comments)])
         })
         .then(([topicDocs, userDocs, articleDocs, commentDocs]) => {
-            console.log('database seeded!')
             return {
                 topics: topicDocs,
                 users: userDocs,
