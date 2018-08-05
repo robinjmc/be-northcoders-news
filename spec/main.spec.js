@@ -24,113 +24,120 @@ describe('API', function () {
     after(() => {
         mongoose.disconnect();
     })
-    
+
     describe('/topics', () => {
-        it('GET /topics', () => { //Get all the topics
+        it('GET /topics', () => {
             return request
                 .get('/api/topics')
                 .expect(200)
                 .then(({ body: { topics } }) => {
-                    expect(topics).to.have.lengthOf(2)
-                    expect(topics[0].title).to.equal('Mitch')
+                    expect(topics).to.have.lengthOf(topicDocs.length)
+                    expect(topics[0].title).to.equal(topicDocs[0].title)
                     expect(topics[1]._id).to.equal(`${topicDocs[1]._id}`)
                 })
         })
-        it('GET /topics/:topic_id/articles', () => { //Return all the articles for a certain topic
+        it('GET /topics/:topic_id/articles', () => {
             return request
                 .get(`/api/topics/${topicDocs[1]._id}/articles`)
                 .expect(200)
-                .then(res => {
-                    expect(res.body).to.have.lengthOf(2)
-                    expect(res.body[0].belongs_to).to.equal(`${topicDocs[1]._id}`)
-                    expect(res.body[1].belongs_to).to.equal(`${topicDocs[1]._id}`)
+                .then(({ body }) => {
+                    expect(body).to.have.lengthOf(2)
+                    expect(body[0].belongs_to).to.equal(`${topicDocs[1]._id}`)
+                    expect(body[1].belongs_to).to.equal(`${topicDocs[1]._id}`)
                 })
         })
-        it('POST /topics/:topic_id/articles w/existing user', () => { //Add a new article to a topic.
+        it('POST /topics/:topic_id/articles w/existing user', () => {
+            let newArticle = {
+                'title': 'this is my new article title',
+                'body': 'This is my new article content',
+                'user': `${userDocs[0]._id}`
+            }
             return request
                 .post(`/api/topics/${topicDocs[0]._id}/articles`)
-                .send({
-                    'title': 'this is my new article title',
-                    'body': 'This is my new article content',
-                    'user': `${userDocs[0]._id}`
-                })
+                .send(newArticle)
                 .expect(201)
                 .then(({ body }) => {
-                    expect(body.created_by).to.equal(`${userDocs[0]._id}`)
-                    expect(body.body).to.equal('This is my new article content')
+                    expect(body.created_by).to.equal(`${newArticle.user}`)
+                    expect(body.body).to.equal(newArticle.body)
+                    expect(body.belongs_to).to.equal(`${topicDocs[0]._id}`)
                 })
         })
-        
+
     })
     describe('/articles', () => {
-        it('GET /articles', () => { //Returns all the articles & their indivdual comment count
+        it('GET /articles', () => {
             return request
                 .get('/api/articles')
                 .expect(200)
                 .then(({ body }) => {
-                    expect(body).to.have.lengthOf(4)
+                    expect(body).to.have.lengthOf(articleDocs.length)
                     expect(body[2].created_by).to.equal(`${userDocs[0]._id}`)
                     expect(body[1].belongs_to).to.equal(`${topicDocs[0]._id}`)
-                    expect(body[0].comment_count).to.equal(2)
+                    expect(body[0]).to.have.property('comment_count').that.is.a('number');
                 })
         })
-        it('GET /articles/article_id', () => {//Get an individual article
+        it('GET /articles/article_id', () => {
             return request
                 .get(`/api/articles/${articleDocs[0]._id}`)
                 .expect(200)
                 .then(({ body }) => {
                     expect(body._id).to.equal(`${articleDocs[0]._id}`)
-                    expect(body.body).to.equal('I find this existence challenging')
+                    expect(body.body).to.equal(articleDocs[0].body)
                 })
         })
-        it('GET /articles/:article_id/comments', () => { //Get all the comments for a individual article
+        it('GET /articles/:article_id/comments', () => {
             return request
                 .get(`/api/articles/${articleDocs[0]._id}/comments`)
                 .expect(200)
-                .then(res => {
-                    expect(res.body).to.have.lengthOf(2)
-                    expect(res.body[1].body).to.equal('The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.')
-                    expect(res.body[0].belongs_to).to.equal(`${articleDocs[0]._id}`)
+                .then(({ body }) => {
+                    expect(body).to.have.lengthOf(2)
+                    expect(body[0].body).to.equal(commentDocs[0].body)
+                    expect(body[1].belongs_to).to.equal(`${articleDocs[0]._id}`)
                 })
         })
-        it('POST /articles/:article_id/comments w/existing user', () => { //Add a new comment to an article.
+        it('POST /articles/:article_id/comments w/existing user', () => {
+            let newComment = {
+                'comment': 'foo',
+                'user': `${userDocs[0]._id}`
+            }
             return request
                 .post(`/api/articles/${articleDocs[0]._id}/comments`)
-                .send({
-                    'comment': 'foo',
-                    'user': `${userDocs[0]._id}`
-                })
+                .send(newComment)
                 .expect(201)
                 .then(({ body }) => {
                     expect(body.created_by).to.equal(`${userDocs[0]._id}`)
-                    expect(body.body).to.equal('foo')
-
+                    expect(body.body).to.equal(newComment.comment)
+                    expect(body.belongs_to).to.equal(`${articleDocs[0]._id}`)
                 })
         })
-        it('POST /articles/:article_id/comments w/anon user', () => { //Add a new comment to an article.
+        it('POST /articles/:article_id/comments w/anon user', () => {
+            let newComment = {
+                'comment': 'bar'
+            }
             return request
                 .post(`/api/articles/${articleDocs[0]._id}/comments`)
-                .send({
-                    'comment': 'bar'
-                })
+                .send(newComment)
                 .expect(201)
                 .then(({ body }) => {
-                    expect(body.body).to.equal('bar')
+                    expect(body.body).to.equal(newComment.comment)
+                    expect(body.belongs_to).to.equal(`${articleDocs[0]._id}`)
                 })
         })
-        it('PUT /articles/:article_id Increment vote', () => { //Increment or Decrement the votes of an article by one.
+        it('PUT /articles/:article_id Increment vote', () => {
             return request
                 .put(`/api/articles/${articleDocs[0]._id}?vote=up`)
                 .expect(201)
                 .then(({ body }) => {
-                    expect(body.votes).to.equal(1)
+                    expect(body.body).to.equal(articleDocs[0].body)
+                    expect(body.votes).to.equal(articleDocs[0].votes + 1)
                 })
         })
-        it('PUT /articles/:article_id Decrement vote', () => {//Increment or Decrement the votes of an article by one.
+        it('PUT /articles/:article_id Decrement vote', () => {
             return request
                 .put(`/api/articles/${articleDocs[1]._id}?vote=down`)
                 .expect(201)
                 .then(({ body }) => {
+                    expect(body.body).to.equal(articleDocs[1].body)
                     expect(body.votes).to.equal(articleDocs[1].votes - 1)
                 })
         })
@@ -141,30 +148,31 @@ describe('API', function () {
                 .get('/api/users/')
                 .expect(200)
                 .then(({ body }) => {
-                    expect(body.users).to.have.lengthOf(2)
+                    expect(body.users).to.have.lengthOf(userDocs.length)
                     expect(body.users[0]._id).to.equal(`${userDocs[0]._id}`)
                 })
         })
-        it('GET /users/:user_id', () => { //Returns a JSON object with the profile data for the specified user
+        it('GET /users/:user_id', () => {
             return request
                 .get(`/api/users/${userDocs[0]._id}`)
                 .expect(200)
                 .then(({ body }) => {
-                    expect(body.username).to.equal('butter_bridge')
+                    expect(body.username).to.equal(userDocs[0].username)
                     expect(body._id).to.equal(`${userDocs[0]._id}`)
                 })
         })
     })
     describe('/comments', () => {
-        it('PUT /comments/:comment_id Increment vote', () => { //Increment or Decrement the votes of a comment by one.
+        it('PUT /comments/:comment_id Increment vote', () => {
             return request
                 .put(`/api/comments/${commentDocs[0]._id}?vote=up`)
                 .expect(201)
                 .then(({ body }) => {
+                    console.log(body)
                     expect(body.votes).to.equal(commentDocs[0].votes + 1)
                 })
         })
-        it('PUT /comments/:comment_id Decrement vote', () => { //Increment or Decrement the votes of a comment by one.
+        it('PUT /comments/:comment_id Decrement vote', () => {
             return request
                 .put(`/api/comments/${commentDocs[0]._id}?vote=down`)
                 .expect(201)
@@ -172,29 +180,21 @@ describe('API', function () {
                     expect(body.votes).to.equal(commentDocs[0].votes - 1)
                 })
         })
-        it('DELETE /comments/:comment_id', () => { //Deletes a comment
+        it('DELETE /comments/:comment_id', () => {
             return request
-                .post(`/api/articles/${articleDocs[0]._id}/comments`)
-                .send({
-                    'comment': 'foobar',
-                    'user': `${userDocs[0]._id}`
-                })
-                .expect(201)
+                .delete(`/api/comments/${commentDocs[1]._id}`)
+                .expect(202)
                 .then(({ body }) => {
-                    expect(body.created_by).to.equal(`${userDocs[0]._id}`)
-                    return request
-                        .delete(`/api/comments/${body._id}`)
-                        .expect(202)
-                        .then(({ body }) => {
-                            expect(body.body).to.equal('foobar')
-                        })
+                    expect(body._id).to.equal(`${commentDocs[1]._id}`)
+                    expect(body.belongs_to).to.equal(`${commentDocs[1].belongs_to}`)
+                    expect(body.body).to.equal(commentDocs[1].body)
                 })
         })
     })
 
     describe('Error handling', () => {
         describe('/topics', () => {
-            it('GET /topics/:topic_id/articles', () => { //Return correct error for non-existant topic
+            it('GET /topics/:topic_id/articles', () => {
                 return request
                     .get(`/api/topics/${commentDocs[0]._id}/articles`)
                     .expect(404)
@@ -202,7 +202,7 @@ describe('API', function () {
                         expect(body.message).to.equal('Not Found')
                     })
             })
-            it('GET /topics/sheep/articles', () => { //Return correct error for ncorrectly structured id
+            it('GET /topics/sheep/articles', () => {
                 return request
                     .get(`/api/topics/sheep/articles`)
                     .expect(400)
@@ -210,7 +210,7 @@ describe('API', function () {
                         expect(body.message).to.equal('Bad Request')
                     })
             })
-            it('POST /topics/:topic_id/articles w/existing user', () => { //Return correct error for non-existant topic
+            it('POST /topics/:topic_id/articles w/existing user', () => {
                 return request
                     .post(`/api/topics/${commentDocs[0]._id}/articles`)
                     .send({
@@ -223,7 +223,7 @@ describe('API', function () {
                         expect(body.message).to.equal('Not Found')
                     })
             })
-            it('POST /topics/sheep/articles w/existing user', () => { //Return correct error for incorrectly structured id
+            it('POST /topics/sheep/articles w/existing user', () => {
                 return request
                     .post(`/api/topics/sheep/articles`)
                     .send({
@@ -250,7 +250,6 @@ describe('API', function () {
             })
         })
         describe('/articles', () => {
-            //getting non-exisiting article
             it('get articles/foo', () => {
                 return request
                     .get('/api/articles/foo')
@@ -283,7 +282,7 @@ describe('API', function () {
                         expect(body.message).to.equal('Bad Request')
                     })
             })
-            it('POST /articles/:article_id/comments non-exisiting article', () => { //Return correct error for non-existant article
+            it('POST /articles/:article_id/comments non-exisiting article', () => {
                 return request
                     .post(`/api/articles/${commentDocs[0]._id}/comments`)
                     .send({
@@ -294,7 +293,7 @@ describe('API', function () {
                         expect(body.message).to.equal('Not Found')
                     })
             })
-            it('POST /articles/:article_id/comments non-exisiting article', () => { //Return correct error for non-existant article
+            it('POST /articles/:article_id/comments non-exisiting article', () => {
                 return request
                     .post(`/api/articles/mouse/comments`)
                     .send({
@@ -305,7 +304,7 @@ describe('API', function () {
                         expect(body.message).to.equal('Bad Request')
                     })
             })
-            it('POST /articles/:article_id/comments non-formatted comment', () => { //returns correct error for wrongly formatted post request
+            it('POST /articles/:article_id/comments non-formatted comment', () => {
                 return request
                     .post(`/api/articles/${articleDocs[0]._id}/comments`)
                     .send({
@@ -317,23 +316,24 @@ describe('API', function () {
                     })
             })
 
-            it('PUT ignores incorrect query', () => { //ignores incorrect increment query
+            it.only('PUT ignores incorrect query', () => {
                 return request
                     .put(`/api/articles/${articleDocs[1]._id}?vote=down`)
                     .expect(201)
                     .then(({ body }) => {
+                        console.log(body)
                         return request
                             .put(`/api/articles/${articleDocs[1]._id}?vote=bananas`)
                             .expect(200)
                             .then(({ body }) => {
+                                console.log(body)
                                 expect(body.votes).to.equal(articleDocs[1].votes - 1)
                             })
                     })
-
             })
         })
         describe('/users', () => {
-            it('GET /users/:user_id', () => { //throws correct error if user not found/invalid user_id
+            it('GET /users/:user_id', () => {
                 return request
                     .get(`/api/users/${articleDocs[0]._id}`)
                     .expect(404)
@@ -341,7 +341,7 @@ describe('API', function () {
                         expect(body.message).to.equal('Not Found')
                     })
             })
-            it('GET /users/:user_id', () => { //throws correct error if user not formatted properly
+            it('GET /users/:user_id', () => {
                 return request
                     .get(`/api/users/steve`)
                     .expect(400)
@@ -351,15 +351,17 @@ describe('API', function () {
             })
         })
         describe('/comments', () => {
-            it('ignores incorrect increment query', () => { //ignores incorrect increment query
+            it.only('ignores incorrect increment query', () => {
                 return request
                     .put(`/api/comments/${commentDocs[1]._id}?vote=down`)
                     .expect(201)
                     .then(({ body }) => {
+                        console.log(body)
                         return request
                             .put(`/api/comments/${commentDocs[1]._id}?vote=bananas`)
                             .expect(200)
                             .then(({ body }) => {
+                                console.log(body)
                                 expect(body.votes).to.equal(commentDocs[1].votes - 1)
                             })
                     })
@@ -380,22 +382,12 @@ describe('API', function () {
                         expect(body.message).to.equal('Bad Request')
                     })
             })
-            it('throws correct error if comment_id does not exist', () => {//throws correct error if comment_id does not exist
+            it('throws correct error if comment_id does not exist', () => {
                 return request
-                    .post(`/api/articles/${articleDocs[0]._id}/comments`)
-                    .send({
-                        'comment': 'foobar',
-                        'user': `${userDocs[0]._id}`
-                    })
-                    .expect(201)
+                    .delete(`/api/comments/${userDocs[0]._id}`)
+                    .expect(404)
                     .then(({ body }) => {
-                        expect(body.created_by).to.equal(`${userDocs[0]._id}`)
-                        return request
-                            .delete(`/api/comments/${userDocs[0]._id}`)
-                            .expect(404)
-                            .then(({ body }) => {
-                                expect(body.message).to.equal('Not Found')
-                            })
+                        expect(body.message).to.equal('Not Found')
                     })
             })
             it('throws correct error if comment_id is not formatted correctly', () => {//throws correct error if comment_id is not formatted correctly
@@ -406,7 +398,6 @@ describe('API', function () {
                         expect(body.message).to.equal('Bad Request')
                     })
             })
-
         })
     })
 })
