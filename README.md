@@ -57,7 +57,7 @@ In the command line run: $npm run test
 ### Endpoints
 
 ``` http
-GET /api
+GET /
 ```
 
 Serves an HTML page with documentation for all the available endpoints
