@@ -1,6 +1,5 @@
-# Project Title
-
-One Paragraph of project description goes here
+# NC NEWS Back End
+A REST-ful API serving data. Organised into Users, Topics, Articles & Comments.
 
 ## Getting Started
 
@@ -8,80 +7,128 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+Node.js
+download Node by following the installtion steps on their website (https://nodejs.org/en/)
 
-```
-Give examples
-```
+MongoDB
+download the mongo database by following the installtion steps on their website (https://www.mongodb.com)
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
+# Npm install
+CD into the project folder and in the command line run $npm install or $npm i
 
-Say what the step will be
+# Config
+Create a mongo collection for use in development
 
-```
-Give the example
-```
+Create a config folder that includes a config.dev.js and a index.js file
 
-And repeat
+Config.dev.js should include: module.exports = {DB_URL:'mongodb://localhost:$'PORT_NUMBER'/'COLLECTION_NAME''}
 
-```
-until finished
-```
+'PORT_NUMBER' Is the number your mongodb is running on locally
 
-End with an example of getting some data out of the system or using it for a little demo
+'COLLECTION_NAME' Is the name you gave to the mongoDB collection you are using for development
+
+Index.js should include: module.exports = require(`./config.${process.env.NODE_ENV}.js`);
+
+# Seed Development Database
+In the command line run: $npm dev run seed
+
+#Run Locally
+To run locally with nodemon in the browser run in the command line: $npm run dev
+Without nodemon: $npm run start
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
+# Config
+Create a mongo collection for use in testing
 
-### Break down into end to end tests
+In the config folder create a file called config.test.js
 
-Explain what these tests test and why
+Config.test.js should include: module.exports = {DB_URL:'mongodb://localhost:$'PORT_NUMBER'/'COLLECTION_NAME_TEST''}
 
+'PORT_NUMBER' Is the number your mongodb is running on locally
+
+'COLLECTION_NAME_TEST' Is the name you gave to the mongoDB collection you are using for testing
+
+# Running the tests
+In the command line run: $npm run test
+
+### Endpoints
+
+``` http
+GET /api
 ```
-Give an example
+
+Serves an HTML page with documentation for all the available endpoints
+
+``` http
+GET /api/topics/
 ```
 
-### And coding style tests
+Get all the topics
 
-Explain what these tests test and why
-
-```
-Give an example
+``` http
+GET /api/topics/:topic_id/articles
 ```
 
-## Deployment
+Return all the articles for a certain topic
 
-Add additional notes about how to deploy this on a live system
+``` http
+POST /api/topics/:topic_id/articles
+```
 
-## Built With
+Add a new article to a topic. This route requires a JSON body with title and body key value pairs
+e.g: `{ "title": "this is my new article title", "body": "This is my new article content"}`
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+``` http
+GET /api/articles
+```
 
-## Contributing
+Returns all the articles
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+``` http
+GET /api/articles/:article_id
+```
 
-## Versioning
+Get an individual article
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+``` http
+GET /api/articles/:article_id/comments
+```
 
-## Authors
+Get all the comments for a individual article
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
+``` http
+POST /api/articles/:article_id/comments
+```
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+Add a new comment to an article. This route requires a JSON body with a comment key and value pair
+e.g: `{"comment": "This is my new comment"}`
 
-## License
+``` http
+PUT /api/articles/:article_id
+```
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+Increment or Decrement the votes of an article by one. This route requires a vote query of 'up' or 'down'
+e.g: `/api/articles/:article_id?vote=up`
 
-## Acknowledgments
+``` http
+PUT /api/comments/:comment_id
+```
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+Increment or Decrement the votes of a comment by one. This route requires a vote query of 'up' or 'down'
+e.g: `/api/comments/:comment_id?vote=down`
+
+``` http
+DELETE /api/comments/:comment_id
+```
+
+Deletes a comment
+
+``` http
+GET /api/users/:username
+```
+
+Returns a JSON object with the profile data for the specified user.
+

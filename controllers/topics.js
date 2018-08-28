@@ -21,6 +21,7 @@ exports.getArticles = (req, res, next) => {
                     return `${belongID}` === `${article._id}`
                 })
                 article.comment_count = countComments.length
+                // return {...article, comment_count: countComments.length}
                 return article
             })
             res.send(articlesAndComments)
